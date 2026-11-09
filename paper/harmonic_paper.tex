@@ -23,7 +23,7 @@ We present a proof by contradiction that the partial sum of the harmonic series,
 \end{abstract}
 
 \section{Introduction}
-The fact that harmonic numbers are never integers for $n > 1$ is a classical result in number theory, usually proved by showing that a single prime power divides exactly one denominator in the sum. In this note we give a different proof. Assuming that $S_{k+1}$ is an integer, we express $S_k$ as a fraction with denominator $k+1$ in lowest terms, compare this with the fact that the denominator of $S_k$ divides $L_k = \mathrm{LCM}(2,\dots,k)$, and then obtain a parity contradiction from the identity $L_k S_k = m\,[a(k+1)-1]$. The proof uses the global quantities $L_k$ and $\alpha = \max_{2\le i\le k} v_2(i)$; what distinguishes it is that it relates the sums at the two consecutive indices $k$ and $k+1$ directly, instead of arguing by induction.
+The fact that harmonic numbers are never integers for $n > 1$ is a classical result in number theory. A standard proof considers the unique term whose denominator is divisible by the highest power of $2$. In this note we give a variant of that $2$-adic argument, organised around the step from $S_k$ to $S_{k+1}$. Assuming that $S_{k+1}$ is an integer, we express $S_k$ as a fraction with denominator $k+1$ in lowest terms and compare this with the fact that the denominator of $S_k$ divides $L_k = \mathrm{LCM}(2,\dots,k)$. A parity argument based on the identity $L_k S_k = m\,[a(k+1)-1]$ then yields the contradiction. The proof uses the global quantities $L_k$ and $\alpha = \max_{2\le i\le k} v_2(i)$.
 
 \section{Notation and a lemma}
 
@@ -115,5 +115,10 @@ Since $m$ is even in both subcases, the entire right-hand side product $m[a(k+1)
 \subsection*{Conclusion}
 Both cases lead to a contradiction, so our initial assumption that there exists an index $n \ge 2$ with $S_n \in \mathbb{Z}$ must be false. Therefore, $S_n \notin \mathbb{Z}$ for all integers $n \geq 2$.
 \end{proof}
+
+\paragraph{Formal verification.}
+The proof has been formalized and machine-checked in Lean~4 with Mathlib;
+the source is available at
+\url{https://github.com/srivatssriram/harmonic-non-integer}.
 
 \end{document}
