@@ -1,0 +1,119 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\usepackage{microtype}
+\usepackage{hyperref}
+
+\geometry{margin=1in}
+
+\title{\textbf{A Proof by Contradiction on the Non-Integer Property of Partial Harmonic Sums}}
+\author{\textbf{Srivatsan Sriram}}
+\date{\today}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We present a proof by contradiction that the partial sum of the harmonic series, $S_n = \sum_{i=2}^{n} \frac{1}{i}$, is never an integer for any integer $n \geq 2$. The argument compares the sums at two consecutive indices $k$ and $k+1$, splits into two cases according to whether $k+1$ divides $L_k = \mathrm{LCM}(2,3,\dots,k)$, and finishes with a parity analysis based on $2$-adic valuations.
+\end{abstract}
+
+\section{Introduction}
+The fact that harmonic numbers are never integers for $n > 1$ is a classical result in number theory, usually proved by showing that a single prime power divides exactly one denominator in the sum. In this note we give a different proof. Assuming that $S_{k+1}$ is an integer, we express $S_k$ as a fraction with denominator $k+1$ in lowest terms, compare this with the fact that the denominator of $S_k$ divides $L_k = \mathrm{LCM}(2,\dots,k)$, and then obtain a parity contradiction from the identity $L_k S_k = m\,[a(k+1)-1]$. The proof uses the global quantities $L_k$ and $\alpha = \max_{2\le i\le k} v_2(i)$; what distinguishes it is that it relates the sums at the two consecutive indices $k$ and $k+1$ directly, instead of arguing by induction.
+
+\section{Notation and a lemma}
+
+For a positive integer $x$, let $v_2(x)$ denote the largest integer $e \ge 0$ such that $2^e \mid x$. We use three standard facts.
+\begin{itemize}
+    \item[(V1)] $v_2(xy) = v_2(x) + v_2(y)$.
+    \item[(V2)] Every positive integer $x$ can be written as $x = 2^{v_2(x)}\, b$ with $b$ odd.
+    \item[(V3)] $v_2\big(\mathrm{LCM}(x_1,\dots,x_r)\big) = \max_j v_2(x_j)$.
+\end{itemize}
+
+\begin{lemma}\label{lem:alpha}
+Let $k \ge 2$, let $L_k = \mathrm{LCM}(2,3,\dots,k)$, and let $\alpha = \max_{2\le i\le k} v_2(i)$. Then
+\begin{enumerate}
+    \item[(a)] $\alpha \ge 1$ and $v_2(L_k) = \alpha$;
+    \item[(b)] if $i \in \{2,\dots,k\}$ and $v_2(i) = \alpha$, then $i = 2^\alpha$; moreover $2^\alpha \in \{2,\dots,k\}$, so $2^\alpha \le k$;
+    \item[(c)] $k < 2^{\alpha+1}$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(a) The element $2$ lies in $\{2,\dots,k\}$ and $v_2(2) = 1$, so $\alpha \ge 1$. By (V3), $v_2(L_k) = \max_{2\le i\le k} v_2(i) = \alpha$.
+
+(b) Let $i \in \{2,\dots,k\}$ with $v_2(i) = \alpha$. By (V2), $i = 2^\alpha c$ with $c$ odd. Suppose $c \ge 3$. Then $2 \le 2^{\alpha+1} = 2\cdot 2^\alpha < 3\cdot 2^\alpha \le i \le k$, so $2^{\alpha+1} \in \{2,\dots,k\}$ and $v_2(2^{\alpha+1}) = \alpha+1 > \alpha$, contradicting the definition of $\alpha$ as a maximum. Hence $c = 1$ and $i = 2^\alpha$. Since the maximum $\alpha$ is attained by at least one element of $\{2,\dots,k\}$, that element equals $2^\alpha$; so $2^\alpha \in \{2,\dots,k\}$.
+
+(c) If $2^{\alpha+1} \le k$, then $2^{\alpha+1} \in \{2,\dots,k\}$ (as $2^{\alpha+1} \ge 2$) and $v_2(2^{\alpha+1}) = \alpha+1 > \alpha$, again a contradiction. Hence $k < 2^{\alpha+1}$.
+\end{proof}
+
+\section{Main Theorem}
+
+\begin{theorem}
+Let $S_n = \sum_{i=2}^{n} \frac{1}{i}$. For all integers $n \geq 2$, $S_n \notin \mathbb{Z}$.
+\end{theorem}
+
+\begin{proof}
+Suppose for the sake of contradiction that there exists some integer $n \geq 2$ such that $S_n \in \mathbb{Z}$. Let us denote this target index as $n = k+1$, where $k \geq 1$. By our initial assumption, we can write:
+\[
+S_{k+1} = \sum_{i=2}^{k+1} \frac{1}{i} = a
+\]
+for some integer $a \in \mathbb{Z}$. We isolate the final term of the summation to evaluate the structural relationship between successive states:
+\begin{equation}
+S_k + \frac{1}{k+1} = a \implies S_k = a - \frac{1}{k+1} = \frac{a(k+1) - 1}{k+1}
+\end{equation}
+Notice that the numerator and denominator of the resulting fraction are coprime, since $\gcd(a(k+1)-1, k+1) = \gcd(-1, k+1) = 1$. Thus the right-hand side of (1) is a fraction in lowest terms, and the denominator of $S_k$ in lowest terms is exactly $k+1$.
+
+Let $L_k = \text{LCM}(2, 3, \dots, k)$, with the convention that the empty LCM equals $1$, so $L_1 = 1$. We partition our analysis into two mutually exclusive and exhaustive cases based on the divisibility relationship between the successor term $(k+1)$ and $L_k$.
+
+\subsection*{Case 1: $(k+1) \nmid L_k$}
+Each $i \in \{2,\dots,k\}$ divides $L_k$, so $L_k S_k = \sum_{i=2}^{k} \frac{L_k}{i}$ is an integer. Therefore the denominator of $S_k$ in lowest terms divides $L_k$. By Equation (1) that denominator is exactly $k+1$, so $(k+1) \mid L_k$. This contradicts the case assumption $(k+1) \nmid L_k$. Hence Case 1 is impossible.
+
+In particular, for $k = 1$ we have $L_1 = 1$ and $k+1 = 2 \nmid 1$, so $k=1$ falls under Case 1 and is already excluded. (Directly: $S_2 = \tfrac12$.) Consequently, in Case 2 below we may and do assume $k \geq 2$.
+
+\subsection*{Case 2: $(k+1) \mid L_k$ (so $k \ge 2$)}
+If $(k+1)$ divides $L_k$, there exists an integer multiplier $m \geq 1$ such that:
+\begin{equation}
+L_k = m(k+1)
+\end{equation}
+Multiplying both sides of the structural identity in Equation (1) by $L_k$, we obtain:
+\begin{equation}
+L_k \cdot S_k = m(k+1) \cdot a - m \implies L_k \cdot S_k = m[a(k+1) - 1]
+\end{equation}
+Let $\Delta = L_k \cdot S_k = \sum_{i=2}^{k} \frac{L_k}{i}$, an integer. We analyze the parity of both sides of Equation (3).
+
+Let $\alpha = \max_{2 \leq i \leq k} v_2(i)$. By Lemma~\ref{lem:alpha}, $v_2(L_k) = \alpha$, and within $\{2, 3, \dots, k\}$ the element $2^\alpha$ is the unique element attaining the maximum valuation. Expanding the summation for $\Delta$:
+\[
+\Delta = \frac{L_k}{2} + \frac{L_k}{3} + \dots + \frac{L_k}{2^\alpha} + \dots + \frac{L_k}{k}
+\]
+By (V1), $v_2\!\left(\frac{L_k}{i}\right) = \alpha - v_2(i)$ for each $i \in \{2,\dots,k\}$. For every term with $i \neq 2^\alpha$ we have $v_2(i) < \alpha$ (since $v_2(i) \le \alpha$ by maximality, and equality would force $i = 2^\alpha$ by Lemma~\ref{lem:alpha}(b)), so $v_2\!\left(\frac{L_k}{i}\right) \ge 1$ and the quotient $\frac{L_k}{i}$ is an \textit{even} integer. For the unique term $i = 2^\alpha$, we have $v_2\!\left(\frac{L_k}{2^\alpha}\right) = 0$, so the quotient is an \textit{odd} integer. The sum of any number of even integers and exactly one odd integer is \textbf{odd}. Therefore, $\Delta$ is odd.
+
+We now evaluate the parity of the right-hand side of Equation (3), $m[a(k+1) - 1]$, by determining the properties of the multiplier $m$. By (V1) applied to Equation (2),
+\[
+\alpha = v_2(L_k) = v_2(m) + v_2(k+1).
+\]
+\begin{itemize}
+    \item \textbf{Case 2(a): $(k+1)$ is an odd integer.}\\
+    Then $v_2(k+1) = 0$, so $v_2(m) = \alpha \geq 1$ by Lemma~\ref{lem:alpha}(a). (Equivalently: $L_k$ is even because $2 \in \{2,\dots,k\}$.) Thus, $m$ is an \textbf{even} integer.
+
+    \item \textbf{Case 2(b): $(k+1)$ is an even integer.}\\
+    Write $k+1 = 2^\beta \cdot b$ with $\beta = v_2(k+1) \ge 1$ and $b$ odd, by (V2). Since $(k+1) \mid L_k$, we have $\beta \le v_2(L_k) = \alpha$.
+
+    First, $(k+1)$ is not a pure power of $2$, i.e.\ $b \ne 1$. Indeed, if $b = 1$ then $k+1 = 2^\beta$ with $\beta \le \alpha$, so $k + 1 \le 2^\alpha \le k$ by Lemma~\ref{lem:alpha}(b), which is absurd. Hence $b > 1$, and since $b$ is odd, $b \ge 3$.
+
+    Next, $\beta < \alpha$. We already know $\beta \le \alpha$. Suppose $\beta = \alpha$. Then $k+1 = 2^\alpha b \ge 3\cdot 2^\alpha$, so $k \ge 3\cdot 2^\alpha - 1 \ge 2\cdot 2^\alpha = 2^{\alpha+1}$, contradicting Lemma~\ref{lem:alpha}(c). Hence $\beta < \alpha$.
+
+    From $\alpha = v_2(m) + \beta$ and $\beta < \alpha$ we get $v_2(m) = \alpha - \beta \geq 1$. Consequently, the multiplier $m$ is an \textbf{even} integer.
+\end{itemize}
+
+Since $m$ is even in both subcases, the entire right-hand side product $m[a(k+1) - 1]$ is an \textbf{even} integer. This establishes a contradiction, as the odd left-hand side $\Delta$ cannot equal an even integer.
+
+\subsection*{Conclusion}
+Both cases lead to a contradiction, so our initial assumption that there exists an index $n \ge 2$ with $S_n \in \mathbb{Z}$ must be false. Therefore, $S_n \notin \mathbb{Z}$ for all integers $n \geq 2$.
+\end{proof}
+
+\end{document}
