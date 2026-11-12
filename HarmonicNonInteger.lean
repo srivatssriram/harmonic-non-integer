@@ -18,7 +18,7 @@
              * Helpers: the 2-adic valuation `v₂`, L_k = LCM(2,…,k),
                α = max_{2≤i≤k} v₂(i), and Lemma 1
                (`unique_max`, `two_pow_alpha_mem`, `L_form`, `v2_L`).
-             * Equation (1) and gcd(a(k+1)−1, k+1) = 1       (`eq1`, `gcd_eq_one`).
+             * Equation (1) and gcd(a(k+1)−1, k+1) = 1       (`eq1`, `isCoprime_succ`).
              * Case 1, (k+1) ∤ L_k                  (`den_S_dvd_L`, `dvd_den_of_mul`).
              * Case 2, (k+1) ∣ L_k: ∆ is odd (`odd_Delta`), m is even (`even_m`),
                and the two contradict each other                  (`paper_core`).
@@ -94,55 +94,26 @@ lemma Qn_odd (k : ℕ) : Odd (Qn k) := by
 
 /-! ### 2-adic valuations
 
-  `v2 n` is defined directly from the decomposition `n = 2^e * b` (b odd),
-  so nothing here depends on Mathlib's `padicValNat` / `multiplicity` API. -/
+  `v₂ n` is Mathlib's `padicValNat 2 n`.  Only two facts about it are taken from
+  Mathlib (its value on odd numbers, and on `2^e * b` with `b` odd); everything
+  else below is derived from the decomposition `n = 2^e * b`. -/
 
-/-- The exponent of 2 in a decomposition is unique. -/
-lemma two_pow_mul_odd_unique {e e' b b' : ℕ} (hb : Odd b) (hb' : Odd b')
-    (h : 2 ^ e * b = 2 ^ e' * b') : e = e' := by
-  rcases lt_trichotomy e e' with hlt | heq | hgt
-  · exfalso
-    obtain ⟨d, rfl⟩ : ∃ d, e' = e + d + 1 := ⟨e' - e - 1, by omega⟩
-    have h2e : 0 < 2 ^ e := by positivity
-    have hbb : b = 2 * (2 ^ d * b') := by
-      apply Nat.eq_of_mul_eq_mul_left h2e
-      calc 2 ^ e * b = 2 ^ (e + d + 1) * b' := h
-        _ = 2 ^ e * (2 * (2 ^ d * b')) := by ring
-    obtain ⟨r, hr⟩ := hb
-    omega
-  · exact heq
-  · exfalso
-    obtain ⟨d, rfl⟩ : ∃ d, e = e' + d + 1 := ⟨e - e' - 1, by omega⟩
-    have h2e : 0 < 2 ^ e' := by positivity
-    have hbb : b' = 2 * (2 ^ d * b) := by
-      apply Nat.eq_of_mul_eq_mul_left h2e
-      calc 2 ^ e' * b' = 2 ^ (e' + d + 1) * b := h.symm
-        _ = 2 ^ e' * (2 * (2 ^ d * b)) := by ring
-    obtain ⟨r, hr⟩ := hb'
-    omega
-
-/-- `v2 n` = the exponent of 2 in `n` (0 for `n = 0`). -/
-noncomputable def v2 (n : ℕ) : ℕ :=
-  if h : 1 ≤ n then (two_pow_mul_odd n h).choose else 0
-
-local notation "v₂" => v2
-
-lemma v2_decomp {e b : ℕ} (hb : Odd b) : v₂ (2 ^ e * b) = e := by
-  have h0 : 0 < 2 ^ e * b := Nat.mul_pos (by positivity) hb.pos
-  have h1 : 1 ≤ 2 ^ e * b := by omega
-  have key : v2 (2 ^ e * b) = (two_pow_mul_odd (2 ^ e * b) h1).choose := by
-    simp [v2, h1]
-  rw [key]
-  obtain ⟨b', hb', h'⟩ := (two_pow_mul_odd (2 ^ e * b) h1).choose_spec
-  exact two_pow_mul_odd_unique hb' hb h'.symm
+local notation "v₂" => padicValNat 2
 
 lemma v2_odd {b : ℕ} (hb : Odd b) : v₂ b = 0 := by
-  have := v2_decomp (e := 0) hb
-  simpa using this
+  have h2 : ¬ (2 ∣ b) := by
+    obtain ⟨r, hr⟩ := hb
+    omega
+  exact padicValNat.eq_zero_iff.mpr (Or.inr (Or.inr h2))
+
+lemma v2_decomp {e b : ℕ} (hb : Odd b) : v₂ (2 ^ e * b) = e := by
+  have hb0 : b ≠ 0 := hb.pos.ne'
+  rw [padicValNat_base_pow_mul Nat.one_lt_two hb0 e, v2_odd hb, zero_add]
 
 lemma v2_pow (n : ℕ) : v₂ (2 ^ n) = n := by
-  have := v2_decomp (e := n) (b := 1) odd_one
-  simpa using this
+  have h := v2_decomp (e := n) (b := 1) odd_one
+  rw [mul_one] at h
+  exact h
 
 lemma v2_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) : v₂ (a * b) = v₂ a + v₂ b := by
   obtain ⟨e1, b1, hb1, rfl⟩ := two_pow_mul_odd a (Nat.pos_of_ne_zero ha)
@@ -281,10 +252,7 @@ lemma eq1 {k : ℕ} {a : ℤ} (hk1 : 1 ≤ k) (ha : S (k + 1) = (a : ℚ)) :
   push_cast
   linear_combination (-1 : ℚ) * hx
 
-/-- "gcd(a(k+1) − 1, k+1) = gcd(−1, k+1) = 1". -/
-lemma gcd_eq_one (a : ℤ) (k : ℕ) : Int.gcd (a * ((k : ℤ) + 1) - 1) ((k : ℤ) + 1) = 1 :=
-  Int.isCoprime_iff_gcd_eq_one.mp ⟨-1, a, by ring⟩
-
+/-- "gcd(a(k+1) − 1, k+1) = gcd(−1, k+1) = 1", stated as coprimality. -/
 lemma isCoprime_succ (a : ℤ) (k : ℕ) :
     IsCoprime ((k : ℤ) + 1) (a * ((k : ℤ) + 1) - 1) := ⟨a, -1, by ring⟩
 
@@ -354,7 +322,7 @@ lemma odd_Delta {k : ℕ} (hk : 2 ≤ k) : Odd (∑ i ∈ Finset.Icc 2 k, L k / 
   · -- every other term is even :  v₂(L_k) = α > v₂(i)
     apply Finset.sum_induction _ Even (fun a b ha hb => ha.add hb) ⟨0, rfl⟩
     intro i hi
-    show Even (L k / i)
+    change Even (L k / i)
     obtain ⟨hne, hi'⟩ := Finset.mem_erase.mp hi
     obtain ⟨hi2, hik⟩ := Finset.mem_Icc.mp hi'
     have hle := v2_le_alpha hi'
